@@ -8,6 +8,14 @@ module TiktokScraper
       item.id
     end
 
+    def created_at
+      item.createTime
+    end
+
+    def text
+      item.desc
+    end
+
     def item
       @obj
     end
