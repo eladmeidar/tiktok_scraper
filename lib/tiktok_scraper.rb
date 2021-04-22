@@ -6,6 +6,7 @@ require 'ostruct'
 
 module TiktokScraper
   class Error < StandardError; end
+  class HashtagNotFound < StandardError; end
   
   include HTTParty
 

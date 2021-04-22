@@ -4,6 +4,10 @@ module TiktokScraper
       @obj = video_obj
     end
 
+    def id
+      item.id
+    end
+
     def item
       @obj
     end

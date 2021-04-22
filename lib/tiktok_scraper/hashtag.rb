@@ -3,16 +3,52 @@ require 'byebug'
 
 module TiktokScraper
   class Hashtag
-    
-    def self.get_posts(hashtag, count = 100)
-      raw_results = TiktokScraper.get("/public/discover/hashtag?keyword=#{hashtag}&count=#{count}").parsed_response
+    MAX_POSTS_PER_PAGE = 20
 
-      byebug
-      results = raw_results["challengeInfoList"].first["itemList"].collect do |item_attrs|
-        TiktokScraper::Video.new(TiktokScraper.to_recursive_ostruct(item_attrs))
+    def self.get_posts(hashtag, count = 100)
+      videos = []
+      hashtag_id = get_hashtag_id(hashtag)
+      
+      result = get_hashtag_posts(hashtag_id)
+
+      videos = videos.concat(result[:items])
+
+      while result[:has_more] && videos.length <= count
+        result = get_hashtag_posts(hashtag_id, result[:cursor])
+        videos = videos.concat(result[:items])
       end
-      results
-      #JSON.parse(raw_results, object_class: OpenStruct).collect {|raw_attrs| TiktokScraper::Video.new(raw_attrs) }
+      
+      videos.uniq {|vid| vid.id }.slice(0...count)
+    end
+
+    protected
+
+    def self.get_hashtag_posts(hashtag_id, cursor = nil)
+      query = {
+        id: hashtag_id
+      }
+
+      if cursor
+        query[:cursor] = cursor
+      end
+
+      results = TiktokScraper.get('/public/hashtag', query: query)
+      return {
+        cursor: results["cursor"],
+        items: JSON.parse(results["itemList"].to_json, object_class: OpenStruct).collect {|raw_attrs| TiktokScraper::Video.new(raw_attrs) },
+        has_more: results["hasMore"]
+      }
+    end
+
+    def self.get_hashtag_id(hashtag)
+      raw_results = TiktokScraper.get("/public/discover/hashtag", query: {keyword: hashtag, count: MAX_POSTS_PER_PAGE}).parsed_response
+      id = raw_results["challengeInfoList"].first["challenge"]["id"]
+      hashtag_name = raw_results["challengeInfoList"].first["challenge"]["title"]
+      if id.nil? || hashtag_name.downcase != hashtag.downcase
+        raise TiktokScraper::HashtagNotFound, "Hashtag '#{hashtag}' was not found"
+      else
+        id
+      end
     end
   end
 end
