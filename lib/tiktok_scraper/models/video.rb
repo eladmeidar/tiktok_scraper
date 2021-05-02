@@ -1,6 +1,7 @@
 module TiktokScraper
   class Video
     def initialize(video_obj)
+      puts video_obj.inspect
       @obj = video_obj
     end
 
@@ -30,6 +31,10 @@ module TiktokScraper
 
     def music
       item.music
+    end
+
+    def url
+      "https://tiktok.com/@#{author.uniqueId}/video/#{item.id}"
     end
 
     def stats
