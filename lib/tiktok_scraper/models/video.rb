@@ -1,7 +1,6 @@
 module TiktokScraper
   class Video
     def initialize(video_obj)
-      puts video_obj.inspect
       @obj = video_obj
     end
 
