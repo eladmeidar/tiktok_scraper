@@ -6,14 +6,13 @@ module TiktokScraper
 
     def self.get_posts(hashtag, count = 100)
       videos = []
-      hashtag_id = get_hashtag_id(hashtag)
       
-      result = get_hashtag_posts(hashtag_id)
+      result = get_hashtag_posts(hashtag)
 
       videos = videos.concat(result[:items])
 
       while result[:has_more] && videos.length <= count
-        result = get_hashtag_posts(hashtag_id, result[:cursor])
+        result = get_hashtag_posts(hashtag, result[:cursor])
         videos = videos.concat(result[:items])
       end
       
@@ -22,9 +21,9 @@ module TiktokScraper
 
     protected
 
-    def self.get_hashtag_posts(hashtag_id, cursor = nil)
+    def self.get_hashtag_posts(hashtag, cursor = nil)
       query = {
-        id: hashtag_id
+        name: hashtag
       }
 
       if cursor
@@ -32,6 +31,7 @@ module TiktokScraper
       end
 
       results = TiktokScraper.get('/public/hashtag', query: query)
+      
       return {
         cursor: results["cursor"],
         items: JSON.parse(results["itemList"].to_json, object_class: OpenStruct).collect {|raw_attrs| TiktokScraper::Video.new(raw_attrs) },
