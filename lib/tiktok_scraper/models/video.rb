@@ -85,10 +85,10 @@ module TiktokScraper
           height: video.height, 
           ratio: video.ratio, 
           duration: video.duration },
-        diggCount: item.diggCount,
-        shareCount: item.shareCount,
-        playCount: item.playCount,
-        commentCount: item.commentCount,
+        diggCount: item.stats.diggCount,
+        shareCount: item.stats.shareCount,
+        playCount: item.stats.playCount,
+        commentCount: item.stats.commentCount,
         mentions: tags.select {|mention| mention["type"] == 0}.map {|mention| "@#{mention["userUniqueId"]}" },
         hashtags: tags.select {|mention| mention["type"] == 1}.map {|mention| {id: mention["hashtagId"], name: mention["hashtagName"]} }
       }
