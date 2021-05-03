@@ -1,5 +1,6 @@
 module TiktokScraper
   class Video
+
     def initialize(video_obj)
       @obj = video_obj
     end
@@ -49,7 +50,8 @@ module TiktokScraper
         id: item.id,
         text: item.desc,
         createTime: item.createTime,
-        authorMeta:{
+        link: url,
+        authorMeta: {
             id: author.id,
             name: author.uniqueId,
             full_name: author.nickname,

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    tiktok_scraper (0.4.0)
+    tiktok_scraper (0.5.0)
       httparty
       rack
       user-agent-randomizer
